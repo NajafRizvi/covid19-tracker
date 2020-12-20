@@ -17,11 +17,11 @@ import VerifiedUserSharpIcon from '@material-ui/icons/VerifiedUserSharp';
 import LocalHotelSharpIcon from '@material-ui/icons/LocalHotelSharp';
 import { NativeSelect, FormControl } from '@material-ui/core';
 import { green,blue,red,yellow } from '@material-ui/core/colors';
-import Axios from 'axios';
+import {fetchDailyData} from '../API/Api'
 const useStyles = makeStyles((theme)=>({
     root:{
         flex:1,
-        marginTop:"140px",
+        marginTop:"100px",
     },
     chart:{
         marginLeft:"400px",
@@ -40,68 +40,11 @@ const useStyles = makeStyles((theme)=>({
       },
 }));
 
-export default function Cards() {
+export default function Cards(props) {
     const classes = useStyles();
-    const [globalData, setGlobalData] = useState([]);
-    const [globalCountry, setCountry] = useState([{}])
-    useEffect(() => {
-        async function fetchData() {
-            const response = await fetch("https://disease.sh/v3/covid-19/all")
-            let data = await response.json();
-            setGlobalData(data);
-        }
-        fetchData();
-    },[])
-    useEffect(() => {
-        async function getData() {
-            const response = await fetch(`https://api.thevirustracker.com/free-api?countryTotals=ALL`);
-            let data = await response.json();
-            console.log(data)
-            setCountry(Object.values(Object.values(data.countryitems)[0]));
-        }
-        getData();
-    }, [])
-    const [Data,setData] = useState([]);
-    async function CountryData()
-    {
-        const defaultRes = Axios.get("https://covid19.mathdro.id/api");
-        const resCountry = Axios.get( "https://covid19.mathdro.id/api/countries");
-        const countries = Object.keys(resCountry.data.countries);
-        setData({
-            confirmed: defaultRes.data.confirmed.value,
-            recovered: defaultRes.data.recovered.value,
-            deaths: defaultRes.data.deaths.value,
-            countries: countries,
-        });
-
-    }
-    const [countrydata,setCountrydata]  = useState([])
-    async function getCountryData()
-    {
-        const defaultRes = await Axios.get("https://covid19.mathdro.id/api");
-        const countriesRes = await Axios.get(
-          "https://covid19.mathdro.id/api/countries"
-        );
-        const countries = Object.keys(countriesRes.data.countries);
-    
-        this.setCountrydata({
-          confirmed: defaultRes.data.confirmed.value,
-          recovered: defaultRes.data.recovered.value,
-          deaths: defaultRes.data.deaths.value,
-          countries: countries
-        });
-      }
-    const { active, cases, deaths, recovered,updated } = globalData;
-    const date = new Date(parseInt(updated));
+    const date = new Date(props.data.lastUpdate);
     const updateDate = date.toString()
-    if (!cases) {
-        return (
-          <div className={classes.load}>
-            <CircularProgress />
-          </div>
-        );
-      }
-    return (
+    return(
         <Container>
         <CssBaseline />
         <div className={classes.root}>
@@ -119,30 +62,9 @@ export default function Cards() {
             <CardContent>
             <Typography className={classes.active} variant="h5" component="h3">
                 Active
-                
         </Typography>
         <Typography className={classes.cases} variant="h5" component="h2">
-        <CountUp start={0} end={active} duration={5} separator="," />
-        </Typography>
-            </CardContent>
-        </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-        <Card className={classes.card} style={{backgroundColor:yellow[400]}} >
-            <CardHeader
-                avatar={
-                    <Avatar>
-                       <GroupSharpIcon fontSize="large" style={{color:yellow[500]}} ></GroupSharpIcon>
-                   </Avatar>
-                }
-            />
-            <CardContent>
-            <Typography  variant="h5" component="h2">
-                Cases
-                
-        </Typography>
-        <Typography className={classes.cases} variant="h5" component="h2">
-        <CountUp start={0} end={cases} duration={5} separator="," />   
+                 {props.data.confirmed.value}  
         </Typography>
             </CardContent>
         </Card>
@@ -162,19 +84,13 @@ export default function Cards() {
            
    </Typography>
    <Typography className={classes.cases} variant="h5" component="h2">
-   <CountUp start={0} end={recovered} duration={5} separator="," />
-
-       
-      
-          
+   {props.data.recovered.value}
+   <CountUp start={0} end={props.data.recovered.value} duration={5} separator="," />   
    </Typography>
        </CardContent>
    </Card>
        </Grid>
-      </Grid>
-    
-      <Grid container spacing={3}>
-      <Grid item xs={12} sm={4}>
+       <Grid item xs={12} sm={4}>
       <Card className={classes.card} style={{backgroundColor:red[400]}} >
 <CardHeader
     avatar={
@@ -188,30 +104,15 @@ export default function Cards() {
     Deaths
     
 </Typography>
-<Typography variant="h5" component="h2">
-<CountUp start={0} end={deaths} duration={5} separator="," />
-
-
-
-   
+<Typography variant="h5" component="h2">  
+{props.data.deaths.value}
 </Typography>
+<CountUp start={0} end={props.data.deaths.value} duration={5} separator="," />
 </CardContent>
 </Card>
-    
+      </Grid>      
       </Grid>
-       <Grid item xs={6} sm={7}>
-      <Chart style={{Align:"center"}}></Chart>
-       </Grid>
-      </Grid>
-      <Grid container spacing={3}>
-      
-      </Grid>
-      <FormControl>
-    <NativeSelect defaultValue="" onChange={getCountryData}>
-      <option value="">Select Country</option>
-     {Data.map((country,i) => <option key={i} value={Data[i]}>{country}</option>)}
-    </NativeSelect>
-  </FormControl>
+     
     </div>
     </Container>
 )}

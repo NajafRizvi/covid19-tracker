@@ -1,65 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
+import { NativeSelect, FormControl } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        maxWidth: 1000,
-        margin: '0 auto',
-        marginTop: 50
-    },
-    title: {
-        textAlign: 'left'
-    },
-    table: {
-        height: 450,
-        overflowY: 'scroll',
-        display: 'block'
-    }
-}));
+import { fetchCountries } from '../API/Api';
+const Countries = ({ handleCountryChange }) => {
+  const [countries, setCountries] = useState([]);
 
-export default function CountryPicker() {
-    const [globalData, setGlobalData] = useState([{}]);
+  useEffect(() => {
+    const fetchAPI = async () => {
+      setCountries(await fetchCountries());
+    };
 
-    useEffect(() => {
-        async function getData() {
-            const response = await fetch("https://api.thevirustracker.com/free-api?countryTotals=ALL");
-            let data = await response.json();
-            console.log(data)
-            setGlobalData(Object.values(Object.values(data.countryitems)[0]));
-        }
-        getData();
-    }, [])
+    fetchAPI();
+  }, []);
 
-    const classes = useStyles();
+  return (
+    <FormControl>
+      <NativeSelect defaultValue="" onChange={(e) => handleCountryChange(e.target.value)}>
+        <option value="">United States</option>
+        {countries.map((country, i) => <option key={i} value={country}>{country}</option>)}
+      </NativeSelect>
+    </FormControl>
+  );
+};
 
-    return (
-        <div className={classes.root}>
-            <table className={classes.table}>
-                <thead>
-                    <tr className={classes.title}>
-                        <th>Country Name</th>
-                        <th>Total Cases</th>
-                        <th>Active Cases</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {globalData.map((key, ind) => {
-                        return (
-                            <tr key={ind}>
-                                <th className={classes.title}>
-                                    {globalData[ind].title}
-                                </th>
-                                <td>
-                                    {globalData[ind].total_cases}
-                                </td>
-                                <td>
-                                    {globalData[ind].total_active_cases}
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
-        </div>
-    );
-}
+export default Countries;
