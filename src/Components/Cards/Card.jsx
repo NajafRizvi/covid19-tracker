@@ -18,6 +18,7 @@ import LocalHotelSharpIcon from '@material-ui/icons/LocalHotelSharp';
 import { NativeSelect, FormControl } from '@material-ui/core';
 import { green,blue,red,yellow } from '@material-ui/core/colors';
 import {fetchDailyData} from '../API/Api'
+import Countries from '../CountryPicker/CountryPicker'
 const useStyles = makeStyles((theme)=>({
     root:{
         flex:1,
@@ -31,19 +32,16 @@ const useStyles = makeStyles((theme)=>({
         display: "flex",
         color:"white",
     },
-    load: {
-        marginLeft: "50%",
-        marginTop: "50px",
-      },
-      table: {
-        minWidth: 650,
-      },
+   
 }));
 
-export default function Cards(props) {
+export default function Cards({ data: { confirmed, recovered, deaths, lastUpdate } }) {
     const classes = useStyles();
-    const date = new Date(props.data.lastUpdate);
+    const date = new Date(lastUpdate);
     const updateDate = date.toString()
+    if (!confirmed) {
+        return 'Loading...';
+      }
     return(
         <Container>
         <CssBaseline />
@@ -64,7 +62,7 @@ export default function Cards(props) {
                 Active
         </Typography>
         <Typography className={classes.cases} variant="h5" component="h2">
-                 {props.data.confirmed.value}  
+        <CountUp start={0} end={confirmed.value} duration={5} separator="," /> 
         </Typography>
             </CardContent>
         </Card>
@@ -84,8 +82,7 @@ export default function Cards(props) {
            
    </Typography>
    <Typography className={classes.cases} variant="h5" component="h2">
-   {props.data.recovered.value}
-   <CountUp start={0} end={props.data.recovered.value} duration={5} separator="," />   
+   <CountUp start={0} end={recovered.value} duration={5} separator="," />   
    </Typography>
        </CardContent>
    </Card>
@@ -105,14 +102,12 @@ export default function Cards(props) {
     
 </Typography>
 <Typography variant="h5" component="h2">  
-{props.data.deaths.value}
+<CountUp start={0} end={deaths.value} duration={5} separator="," />
 </Typography>
-<CountUp start={0} end={props.data.deaths.value} duration={5} separator="," />
 </CardContent>
 </Card>
       </Grid>      
       </Grid>
-     
     </div>
     </Container>
 )}
