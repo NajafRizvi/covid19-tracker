@@ -17,7 +17,8 @@
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "resolve-url-loader": "^3.1.1"
+    "resolve-url-loader": "^3.1.1",
+    "surge": "^0.21.7"
   },
   "scripts": {
     "start": "react-scripts start",
