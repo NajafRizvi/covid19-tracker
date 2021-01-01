@@ -33,7 +33,7 @@ export default function ButtonAppBar() {
             COVID19-TRACKER
           </Typography>
           <Typography>
-            By: Syed Hasnain Askari
+            By: Syed Hasnain Askari Rizvi
           </Typography>
         </Toolbar>
       </AppBar>
